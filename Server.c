@@ -29,8 +29,6 @@ int Server(char* server_ip) {
 	
 	//bcopy(myname->h_addr_list[0], &myaddr.sin_addr, myname->h_length);
 	
-	printf("HOSTNAME: %s, %s\n", myname->h_name, myname->h_addr_list[0]);
-	
 	/* Bind the socket to the set address. */
 	if(bind(s, (struct sockaddr*)&myaddr, sizeof(myaddr)) < 0) ReportError("SERVER ERROR: socket bind");
 
