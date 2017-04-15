@@ -5,9 +5,9 @@ int main(int argc, char **argv){
 	/* Check if correct parameters were provided. */
     if (argc != 4) {
         printf("Usage: %s <server IP> <client IP> <machine ID>\n", argv[0]);
-        printf("\t\t     <server IP> : The IP address of the current machine.\n");
-        printf("\t\t     <client IP> : The IP address of the subsequent machine.\n");
-        printf("\t\t     <machine ID>: THe uniqe ID assigned to this machine.\n");
+        printf("\t\t\t<server IP> : The IP address of the current machine.\n");
+        printf("\t\t\t<client IP> : The IP address of the subsequent machine.\n");
+        printf("\t\t\t<machine ID>: THe uniqe ID assigned to this machine.\n");
         return -1;
     }
 	
