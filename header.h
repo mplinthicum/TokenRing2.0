@@ -6,7 +6,7 @@
 #include <netdb.h>
 #include <netinet/in.h>
 #include <arpa/inet.h>
-#include <strings.h>
+#include <string.h>
 #include <math.h>
 #include <unistd.h>
 #include <sys/time.h>
@@ -20,6 +20,7 @@
 
 int Server(char* server_ip);
 int Client(char* client_ip);
+void get_input(char* buffer, int length);
 
 /* I don't know why these are here yet. */
 //long random(), M= 2147483647;

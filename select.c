@@ -29,14 +29,14 @@
 		if((n == -1) && (errno == EINTR)) /* interruption */
 		   continue;
 		   
-	  	if((n== -1) {
+	  	if(n == -1) {
 		 	/* Code to handle errors. */
 	  	}
 	  	
 		/* After this point, handle the ready descriptor(s). */
 	  
 	  	/* Check for ready data from the keyboard. */
-	  	if(FD_ISSET(STDIN_FILENO, &rset)) {
+	  	if(FD_ISSET(STDIN_FILENO, &rset) {
 	  	
 			... 
 			

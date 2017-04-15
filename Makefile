@@ -1,5 +1,5 @@
 all:
-	gcc workstation.c Server.c Client.c -o workstation
+	gcc workstation.c Server.c Client.c header.c -o workstation
 
 clean:
 	rm workstation
