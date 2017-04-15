@@ -8,7 +8,7 @@
  * the remote machine.  Also, change the port number to a suitable port 
  * number as indicated in the project writeup.
  */
-int Client() {
+int Client(char* client_ip) {
 
 	struct sockaddr_in otheraddr;
 	struct hostent *otherhost;
@@ -24,7 +24,7 @@ int Client() {
 	bzero(&otheraddr, sizeof(otheraddr));
 	otheraddr.sin_family = AF_INET;
 	otheraddr.sin_port = PORT_NO;
-	otheraddr.sin_addr.s_addr = inet_addr("192.168.254.15");
+	otheraddr.sin_addr.s_addr = inet_addr(client_ip);
 	
 	//otherhost = gethostbyname(otherhostname);
 	//bcopy(otherhost->h_addr_list[0], &otheraddr.sin_addr, otherhost->h_length);

@@ -9,7 +9,7 @@
  * will be running your process on. Also, change the port number to 
  * a suitable port number as indicated in the project writeup.
  */
-int Server() {
+int Server(char* server_ip) {
 
 	struct sockaddr_in myaddr, otheraddr;
 	struct hostent *myname;
@@ -25,7 +25,7 @@ int Server() {
 	bzero(&myaddr, sizeof(myaddr));
 	myaddr.sin_family  = AF_INET;
 	myaddr.sin_port = PORT_NO;
-	myaddr.sin_addr.s_addr = inet_addr("192.168.254.14");
+	myaddr.sin_addr.s_addr = inet_addr(server_ip);
 	
 	//bcopy(myname->h_addr_list[0], &myaddr.sin_addr, myname->h_length);
 	

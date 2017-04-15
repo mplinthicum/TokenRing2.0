@@ -17,8 +17,8 @@
 
 /* Hostname: co2048-XX.ece.iastate.edu */
 
-int Server(void);
-int Client(void);
+int Server(char* server_ip);
+int Client(char* client_ip);
 
 /* I don't know why these are here yet. */
 //long random(), M= 2147483647;
