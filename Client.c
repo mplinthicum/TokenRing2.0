@@ -11,23 +11,17 @@
 int Client(char* client_ip) {
 
 	struct sockaddr_in otheraddr;
-	struct hostent *otherhost;
 
 	int s, n, code;
-	char *otherhostname="co2048-15.ece.iastate.edu", ch, thishostname[256];
 	
 	/* Create the socket. */
 	if((s = socket(AF_INET, SOCK_STREAM, 0)) < 0) ReportError("CLIENT ERROR: socket creation");
 	
 	/* Set the socket address. */
-	code = gethostname(thishostname, sizeof(thishostname));
 	bzero(&otheraddr, sizeof(otheraddr));
 	otheraddr.sin_family = AF_INET;
 	otheraddr.sin_port = PORT_NO;
 	otheraddr.sin_addr.s_addr = inet_addr(client_ip);
-	
-	//otherhost = gethostbyname(otherhostname);
-	//bcopy(otherhost->h_addr_list[0], &otheraddr.sin_addr, otherhost->h_length);
 	
 	/* Connect to the server at otherhostname. */
 	n = connect(s, (struct sockaddr*)&otheraddr, sizeof(otheraddr));

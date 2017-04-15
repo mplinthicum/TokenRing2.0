@@ -1,5 +1,5 @@
 all:
-	gcc tests.c Server.c Client.c -o tests
+	gcc workstation.c Server.c Client.c -o workstation
 
 clean:
-	rm tests
+	rm workstation

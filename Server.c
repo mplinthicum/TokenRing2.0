@@ -12,22 +12,17 @@
 int Server(char* server_ip) {
 
 	struct sockaddr_in myaddr, otheraddr;
-	struct hostent *myname;
 
 	int s, fd, otherlength = sizeof(otheraddr);
-	char *hostname = "co2048-14.ece.iastate.edu", ch;
 
 	/* Create the socket. */
 	if((s = socket(AF_INET, SOCK_STREAM, 0)) < 0) ReportError("SERVER ERROR: socket creation");
 	
 	/* Set socket parameters. */
-	myname = gethostbyname(hostname);
 	bzero(&myaddr, sizeof(myaddr));
 	myaddr.sin_family  = AF_INET;
 	myaddr.sin_port = PORT_NO;
 	myaddr.sin_addr.s_addr = inet_addr(server_ip);
-	
-	//bcopy(myname->h_addr_list[0], &myaddr.sin_addr, myname->h_length);
 	
 	/* Bind the socket to the set address. */
 	if(bind(s, (struct sockaddr*)&myaddr, sizeof(myaddr)) < 0) ReportError("SERVER ERROR: socket bind");
