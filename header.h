@@ -16,6 +16,7 @@
 #define PORT_NO				2840
 
 /* Hostname: co2048-XX.ece.iastate.edu */
+/* Coover 2048 IPs: 192.168.254.XX */
 
 int Server(char* server_ip);
 int Client(char* client_ip);

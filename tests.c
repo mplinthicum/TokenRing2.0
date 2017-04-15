@@ -12,9 +12,11 @@ int main(int argc, char **argv){
 	int client_fd = Client(argv[2]);
 	int server_fd = Server(argv[1]);
 	
-	if(client_fd < 0) {
+	while(client_fd <= 0) {
 		client_fd = Client(argv[2]);
 	}
+	
+	while(1);
 	
 	close(server_fd);
 	close(client_fd);
