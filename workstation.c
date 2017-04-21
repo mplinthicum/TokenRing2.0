@@ -29,10 +29,14 @@ int main(int argc, char **argv){
 	
 	/****************************** All connected actual operation time. ******************************/
 	
+	printf("Enter your messages as follows: <machine id> <message>\n");
+	printf("Example: a What's up?\n");
+	
 	int num_fds;
 	fd_set rset;	/* Declare an fd_set for read descriptors. */
+	int is_ready = 0;
 	
-	char buffsend[82], buffrecv[82];
+	char buffsend[82], buffrecv[88], frame[88];
 
 	/* Endless loop for continuous operation. */
 	while(1) {
@@ -48,7 +52,7 @@ int main(int argc, char **argv){
 		   continue;
 		   
 	  	if(num_fds == -1) {
-		 	/* Code to handle errors. */
+		 	/* Optional code to handle errors. */
 	  	}
 	  	
 		/* After this point, handle the ready descriptor(s). */
@@ -56,11 +60,50 @@ int main(int argc, char **argv){
 	  	/* Check for ready data from the keyboard. */
 	  	if(FD_ISSET(STDIN_FILENO, &rset)) {
 	  	
+	  		/* Clear out frame. */
+	  		bzero(frame, sizeof(frame));
+	  		
 	  		/* Get user input from the keyboard. */
-			get_input(buffsend, sizeof(buffsend));
+			get_data(buffsend, sizeof(buffsend));
 			
-			/* Write to the receiver. */
-			if(write(client_fd, buffsend, sizeof(buffsend)) < 0) ReportError("write error\n");
+			/* User entered CTRL-P, generate the token. */
+			if(buffsend[0] == DLE) {
+				frame[0] = SYN;
+				frame[1] = SYN;
+				frame[2] = DLE;
+				frame[3] = ETX;
+				
+				/* Write to the receiver. */
+				if(write(client_fd, frame, sizeof(frame)) < 0) ReportError("write error\n");
+			}
+			
+			/* User is attempting to fill the frame but formatted the message wrong. */
+			else if(buffsend[1] != ' ') {
+			
+				printf("\nMESSAGE FORMAT ERROR\n");
+				printf("Format your messages as follows: <machine id> <message>\n");
+				printf("Your message did not have a space.\n");
+				printf("Message not sent.\n\n");
+			
+			/* User is attempting to fill the frame and formatted the message correctly. */
+			} else {
+			
+				frame[0] = SYN;
+				frame[1] = SYN;
+				frame[2] = DLE;
+				frame[3] = STX;
+		  		frame[4] = machine_id;
+		  		frame[5] = buffsend[0];
+		  		frame[6] = '\0';
+				strcat(frame, buffsend + 2);
+				int length = strlen(frame);
+				frame[length] = DLE;
+				frame[length + 1] = ETX;
+				frame[length + 2] = '\0';
+				
+				/* Set flag indicating this machine is ready to send data. */
+				is_ready = 1;
+			}
 			
 			/* Decrease the number of ready file descriptors. */
 			num_fds--;
@@ -73,11 +116,49 @@ int main(int argc, char **argv){
 			bzero(buffrecv, sizeof(buffrecv));
 			if(read(server_fd, buffrecv, sizeof(buffrecv)) < 0) ReportError("read error\n");
 			
-			printf("Client says: %s\n", buffrecv);
-			
 			/* Write data to client. */
 			bzero(buffsend, sizeof(buffsend));
-			strcpy(buffsend, buffrecv);
+			
+			/* DLE-STX received.  There is data in the frame. */
+			if(buffrecv[2] == DLE && buffrecv[3] == STX) {
+			
+				/* The data is addressed to this machine. Extract the data. */
+				if(buffrecv[5] == machine_id) {
+					buffrecv[strlen(buffrecv) - 2] = '\0';
+					printf("From %c: %s\n", buffrecv[4], buffrecv + 6);
+					
+					buffsend[0] = SYN;
+					buffsend[1] = SYN;
+					buffsend[2] = DLE;
+					buffsend[3] = ETX;
+					buffsend[4] = '\0';
+			
+				/* The data is not addressed to this machine, pass it on. */
+				} else {
+					
+					/* Copy the data to the send buffer. */
+					strcpy(buffsend, buffrecv);
+				}
+				
+			/* Received just the token. */
+			} else if(buffrecv[2] == DLE && buffrecv[3] == ETX) {
+			
+				/* This machine has data to send. */
+				if(is_ready) {
+				
+					/* Copy the frame to the send buffer. */
+					strcpy(buffsend, frame);
+					is_ready = 0;
+				
+				/* This machine does not have data to send. */
+				} else {
+					
+					/* Pass on the token. */
+					strcpy(buffsend, buffrecv);
+				}
+			}
+			
+			/* Write the send buffer. */
 			if(write(client_fd, buffsend, sizeof(buffsend)) < 0) ReportError("write error\n");
 	  	}
 	}

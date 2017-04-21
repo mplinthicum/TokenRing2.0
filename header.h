@@ -14,13 +14,17 @@
 
 #define ReportError(msg)	{perror(msg); exit(-1);}
 #define PORT_NO				2840
+#define DLE					0x10
+#define SYN					0x16
+#define ETX					0x03
+#define STX					0x02
 
 /* Hostname: co2048-XX.ece.iastate.edu */
 /* Coover 2048 IPs: 192.168.254.XX */
 
 int Server(char* server_ip);
 int Client(char* client_ip);
-void get_input(char* buffer, int length);
+void get_data(char* buffer, int length);
 
 /* I don't know why these are here yet. */
 //long random(), M= 2147483647;

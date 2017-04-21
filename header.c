@@ -4,7 +4,7 @@
  * Get input from the keyboard and put it into a 
  * buffer.  Only accept 80 characters max.
  */
-void get_input(char* buffer, int length) {
+void get_data(char* buffer, int length) {
 
 	/* Clear buffer and reset pointer. */
 	bzero(buffer, length);
@@ -12,7 +12,6 @@ void get_input(char* buffer, int length) {
 	
 	/* Read in and get rid of extra characters. */
 	if(buffer[strlen(buffer) - 1] != '\n'){
-		printf("TOO LONG\n");
 		while(fgetc(stdin) != '\n');
 	}
 	
