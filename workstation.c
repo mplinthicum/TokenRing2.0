@@ -36,7 +36,7 @@ int main(int argc, char **argv){
 	fd_set rset;	/* Declare an fd_set for read descriptors. */
 	int is_ready = 0;
 	
-	char buffsend[82], buffrecv[88], frame[88];
+	char buffsend[88], buffrecv[88], frame[88];
 
 	/* Endless loop for continuous operation. */
 	while(1) {
@@ -50,10 +50,6 @@ int main(int argc, char **argv){
 		/* Select blocks, and n is the number of ready descriptors. */
 		if((num_fds == -1) && (errno == EINTR)) /* interruption */
 		   continue;
-		   
-	  	if(num_fds == -1) {
-		 	/* Optional code to handle errors. */
-	  	}
 	  	
 		/* After this point, handle the ready descriptor(s). */
 	  
@@ -68,10 +64,7 @@ int main(int argc, char **argv){
 			
 			/* User entered CTRL-P, generate the token. */
 			if(buffsend[0] == DLE) {
-				frame[0] = SYN;
-				frame[1] = SYN;
-				frame[2] = DLE;
-				frame[3] = ETX;
+				reset_token(frame);
 				
 				/* Write to the receiver. */
 				if(write(client_fd, frame, sizeof(frame)) < 0) ReportError("write error\n");
@@ -88,20 +81,8 @@ int main(int argc, char **argv){
 			/* User is attempting to fill the frame and formatted the message correctly. */
 			} else {
 			
-				frame[0] = SYN;
-				frame[1] = SYN;
-				frame[2] = DLE;
-				frame[3] = STX;
-		  		frame[4] = machine_id;
-		  		frame[5] = buffsend[0];
-		  		frame[6] = '\0';
-				strcat(frame, buffsend + 2);
-				int length = strlen(frame);
-				frame[length] = DLE;
-				frame[length + 1] = ETX;
-				frame[length + 2] = '\0';
-				
-				/* Set flag indicating this machine is ready to send data. */
+				/* Frame and set the ready flag. */
+				fill_frame(frame, machine_id, buffsend);
 				is_ready = 1;
 			}
 			
@@ -126,13 +107,13 @@ int main(int argc, char **argv){
 				if(buffrecv[5] == machine_id) {
 					buffrecv[strlen(buffrecv) - 2] = '\0';
 					printf("From %c: %s\n", buffrecv[4], buffrecv + 6);
-					
-					buffsend[0] = SYN;
-					buffsend[1] = SYN;
-					buffsend[2] = DLE;
-					buffsend[3] = ETX;
-					buffsend[4] = '\0';
+					reset_token(buffsend);
 			
+				/* The data was sent by this machine but the destination was not found. */
+				} else if(buffrecv[4] == machine_id) {
+					printf("Machine %c does not exist in this network\n", buffrecv[5]);
+					reset_token(buffsend);
+				
 				/* The data is not addressed to this machine, pass it on. */
 				} else {
 					

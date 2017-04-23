@@ -25,6 +25,8 @@
 int Server(char* server_ip);
 int Client(char* client_ip);
 void get_data(char* buffer, int length);
+void reset_token(char* buff);
+void fill_frame(char* frame, char machine_id, char* data);
 
 /* I don't know why these are here yet. */
 //long random(), M= 2147483647;

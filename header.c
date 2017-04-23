@@ -19,3 +19,36 @@ void get_data(char* buffer, int length) {
 	
 	return;
 }
+
+/**
+ * Clears the buffer and resets the token.
+ */
+void reset_token(char* buff) {
+	bzero(buff, sizeof(buff));
+	
+	buff[0] = SYN;
+	buff[1] = SYN;
+	buff[2] = DLE;
+	buff[3] = ETX;
+	buff[4] = '\0';
+}
+
+/**
+ * Fills the frame with data specified by the user.
+ */
+void fill_frame(char* frame, char machine_id, char* data) {
+
+	frame[0] = SYN;
+	frame[1] = SYN;
+	frame[2] = DLE;
+	frame[3] = STX;
+	frame[4] = machine_id;
+	frame[5] = data[0];
+	frame[6] = '\0';
+	strcat(frame, data + 2);
+	
+	int length = strlen(frame);
+	frame[length] = DLE;
+	frame[length + 1] = ETX;
+	frame[length + 2] = '\0';
+}
