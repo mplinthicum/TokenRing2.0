@@ -30,13 +30,12 @@ int main(int argc, char **argv){
 	/****************************** All connected actual operation time. ******************************/
 	
 	printf("Enter your messages as follows: <machine id> <message>\n");
-	printf("Example: a What's up?\n");
 	
 	int num_fds;
 	fd_set rset;	/* Declare an fd_set for read descriptors. */
 	int is_ready = 0;
 	
-	char buffsend[88], buffrecv[88], frame[88];
+	char buffsend[89], buffrecv[89], frame[89];
 
 	/* Endless loop for continuous operation. */
 	while(1) {
@@ -60,23 +59,21 @@ int main(int argc, char **argv){
 	  		bzero(frame, sizeof(frame));
 	  		
 	  		/* Get user input from the keyboard. */
-			get_data(buffsend, sizeof(buffsend));
+			if(get_data(buffsend, 84)) printf("\nMessage too long sending truncated version\n\n");
 			
 			/* User entered CTRL-P, generate the token. */
 			if(buffsend[0] == DLE) {
-				reset_token(frame);
+				char token[88];
+				reset_token(token);
 				
 				/* Write to the receiver. */
-				if(write(client_fd, frame, sizeof(frame)) < 0) ReportError("write error\n");
+				if(write(client_fd, token, sizeof(token)) < 0) ReportError("write error\n");
 			}
 			
 			/* User is attempting to fill the frame but formatted the message wrong. */
 			else if(buffsend[1] != ' ') {
 			
-				printf("\nMESSAGE FORMAT ERROR\n");
-				printf("Format your messages as follows: <machine id> <message>\n");
-				printf("Your message did not have a space.\n");
-				printf("Message not sent.\n\n");
+				printf("\nERROR: Format your messages <machine id> <message>\n");
 			
 			/* User is attempting to fill the frame and formatted the message correctly. */
 			} else {
@@ -95,10 +92,8 @@ int main(int argc, char **argv){
 	  	
 			/* Read data from socket. */
 			bzero(buffrecv, sizeof(buffrecv));
-			if(read(server_fd, buffrecv, sizeof(buffrecv)) < 0) ReportError("read error\n");
-			
-			/* Write data to client. */
 			bzero(buffsend, sizeof(buffsend));
+			if(read(server_fd, buffrecv, sizeof(buffrecv)) < 0) ReportError("read error\n");
 			
 			/* DLE-STX received.  There is data in the frame. */
 			if(buffrecv[2] == DLE && buffrecv[3] == STX) {

@@ -24,7 +24,7 @@
 
 int Server(char* server_ip);
 int Client(char* client_ip);
-void get_data(char* buffer, int length);
+int get_data(char* buffer, int length);
 void reset_token(char* buff);
 void fill_frame(char* frame, char machine_id, char* data);
 

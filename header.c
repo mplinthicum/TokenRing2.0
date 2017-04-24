@@ -4,7 +4,9 @@
  * Get input from the keyboard and put it into a 
  * buffer.  Only accept 80 characters max.
  */
-void get_data(char* buffer, int length) {
+int get_data(char* buffer, int length) {
+
+	int overflow_flag = 0;
 
 	/* Clear buffer and reset pointer. */
 	bzero(buffer, length);
@@ -13,11 +15,15 @@ void get_data(char* buffer, int length) {
 	/* Read in and get rid of extra characters. */
 	if(buffer[strlen(buffer) - 1] != '\n'){
 		while(fgetc(stdin) != '\n');
+		
+		if(!overflow_flag) {
+			overflow_flag = 1;
+		}
 	}
 	
 	buffer[strlen(buffer) - 1] = '\0';
 	
-	return;
+	return overflow_flag;
 }
 
 /**
